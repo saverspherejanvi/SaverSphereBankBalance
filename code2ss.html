@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saversphere Piggy Bank</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: white;
+            text-align: center;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        input, button {
+            padding: 10px;
+            margin: 10px;
+            border: none;
+            background-color: #333;
+            color: white;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        .balance {
+            font-size: 2rem;
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #555;
+            margin: 20px 0;
+        }
+
+        #progress-bar-fill {
+            height: 100%;
+            width: 0;
+            background-color: #28a745;
+        }
+
+        .auth-section, .balance-section {
+            margin: 20px 0;
+        }
+
+        #auth-error {
+            color: red;
+        }
+
+        footer {
+            margin-top: 20px;
+            font-size: 0.8rem;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Saversphere Piggy Bank</h1>
+        </header>
+
+        <!-- Authentication Form -->
+        <div id="auth-section" class="auth-section">
+            <h2>Login</h2>
+            <input type="text" id="username" placeholder="Username" />
+            <input type="password" id="pin" placeholder="Enter PIN" />
+            <button onclick="authenticateUser()">Login</button>
+            <p id="auth-error"></p>
+        </div>
+
+        <!-- Balance Section -->
+        <div id="balance-section" class="balance-section" style="display:none;">
+            <h2>Your Balance:</h2>
+            <p id="balance" class="balance">0.00</p>
+            <div>
+                <h3>Update Your Balance:</h3>
+                <input type="number" id="amount" placeholder="Amount to save or withdraw" />
+                <button onclick="updateBalance('add')">Add Money</button>
+                <button onclick="updateBalance('subtract')">Withdraw Money</button>
+            </div>
+
+            <!-- Gamified Progress -->
+            <div class="gamified">
+                <h3>Your Progress</h3>
+                <div>
+                    <p>Progress to Next Level:</p>
+                    <div class="progress-bar">
+                        <div id="progress-bar-fill"></div>
+                    </div>
+                    <p>Level: <span id="user-level">1</span></p>
+                    <p>Points: <span id="user-points">0</span></p>
+                </div>
+                <button onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2024 Saversphere Piggy Bank</p>
+        </footer>
+    </div>
+
+    <script>
+        // Simulated data for the user
+        let user = {
+            username: '',
+            pin: '',
+            balance: 0,
+            points: 0,
+            level: 1,
+        };
+
+        // Function to authenticate user (simulated login)
+        function authenticateUser() {
+            const username = document.getElementById('username').value;
+            const pin = document.getElementById('pin').value;
+
+            // Simple check to authenticate (this can be more secure in real applications)
+            if (username === 'user' && pin === '1234') {
+                user.username = username;
+                user.pin = pin;
+                document.getElementById('auth-section').style.display = 'none';
+                document.getElementById('balance-section').style.display = 'block';
+                updateBalanceDisplay();
+            } else {
+                document.getElementById('auth-error').innerText = 'Invalid username or PIN';
+            }
+        }
+
+        // Function to update balance (simulate adding or withdrawing money)
+        function updateBalance(action) {
+            const amount = parseFloat(document.getElementById('amount').value);
+            if (isNaN(amount) || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+
+            if (action === 'add') {
+                user.balance += amount;
+                user.points += amount * 10;
+            } else if (action === 'subtract' && user.balance >= amount) {
+                user.balance -= amount;
+                user.points -= amount * 5;
+            } else if (action === 'subtract') {
+                alert('Insufficient balance');
+                return;
+            }
+
+            user.level = Math.floor(user.points / 100);
+            updateBalanceDisplay();
+        }
+
+        // Function to update the balance display and progress bar
+        function updateBalanceDisplay() {
+            document.getElementById('balance').innerText = user.balance.toFixed(2);
+            document.getElementById('user-points').innerText = user.points;
+            document.getElementById('user-level').innerText = user.level;
+            updateProgressBar(user.balance);
+        }
+
+        // Function to update progress bar based on balance
+        function updateProgressBar(balance) {
+            const progress = (balance / 1000) * 100; // Goal of 1000 units
+            document.getElementById('progress-bar-fill').style.width = progress + '%';
+        }
+
+        // Function to log out the user
+        function logout() {
+            user = { username: '', pin: '', balance: 0, points: 0, level: 1 };
+            document.getElementById('auth-section').style.display = 'block';
+            document.getElementById('balance-section').style.display = 'none';
+        }
+    </script>
+
+</body>
+</html>
